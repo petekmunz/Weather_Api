@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Simple Weather</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="clear_day">Looks like a great day to take a stroll in the park</string>
+    <string name="clear_night">Great night to see the Moon and the stars.No clouds to block your view</string>
+    <string name="snow">Today we might as well ride the Polar Express, snow all the way</string>
+    <string name="sleet">Oh oh,Hope your umbrella can weather this storm :(</string>
+    <string name="wind">In the spirit of today\'s weather, may you get blown away by your day</string>
+    <string name="fog">We tried to grab the fog, but we MIST :(</string>
+    <string name="cloudy">Cloudy day today, but there is always the silver lining</string>
+    <string name="partly_cloudy">What did we tell you about the silver lining? At least it\'s partly cloudy today :) </string>
+    <string name="partly_cloudy_night">You win tonight clouds, we\'ll see the moon and the stars more clearly on another day</string>
+    <string name="rain">Wear your socks,and have a cup of coffee at home or maybe you\'d like to have fun in the puddles outside :)</string>
+    <string name="blank">It\'s a new day</string>
+</resources>
