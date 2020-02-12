@@ -25,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class MainActivity extends AppCompatActivity {
-    String TAG = MainActivity.class.getSimpleName();
     TextInputEditText editText;
     TextView mCityLabel, mTemperature, mPressureLabel, mHumidityLabel, mSummary, mSuggestion;
     ImageView mImageIcon;
@@ -73,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
             public void onError(Throwable e) {
                 alertUserAboutError();
                 mSuggestion.setText(e.getMessage());
-                Log.d(TAG, e.getMessage() + "Error is here");
             }
 
             @Override
