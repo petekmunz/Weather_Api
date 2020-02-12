@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView mImageIcon;
     String cityName;
     String units = "metric";
-    String appId = "339d9ab1ba68682b093359f45076548e";
+    String appId = "YOUR APP-ID HERE";
 
     API_Interface api_interface;
     CompositeDisposable disposable = new CompositeDisposable();
