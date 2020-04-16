@@ -1,10 +1,21 @@
 package com.example.pmuny.simple_weather;
 
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.example.pmuny.simple_weather.model.WeatherDetails;
+import com.example.pmuny.simple_weather.di.AppComponent;
+
+import javax.inject.Inject;
 
 public class MainViewModel extends ViewModel {
 
-    public MainViewModel() {
+    private Repository repository;
+
+    @Inject
+    MainViewModel(Repository repository) {
+        this.repository = repository;
     }
 
     int setWeatherIcon(String weatherIcon) {
@@ -99,5 +110,17 @@ public class MainViewModel extends ViewModel {
         }
 
         return suggestion;
+    }
+
+    void getWeatherFromApi(String cityName, String units, AppComponent appComponent, MainActivity activity) {
+        repository.getWeatherFromApi(cityName, units, appComponent, activity);
+    }
+
+    LiveData<WeatherDetails> getWeatherLive() {
+        return repository.getLiveWeather();
+    }
+
+    void disposeObserver() {
+        repository.disposeObserver();
     }
 }

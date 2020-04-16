@@ -11,27 +11,26 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class EnterCityActivity extends AppCompatActivity {
-    TextInputEditText meditText;
-    MaterialButton mbutton;
-    TextInputLayout mEditLayout;
+    private TextInputEditText mEditText;
+    private TextInputLayout mEditLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_city);
 
-        meditText = findViewById(R.id.editText);
-        mbutton = findViewById(R.id.btnGetWeather);
+        mEditText = findViewById(R.id.editText);
+        MaterialButton button = findViewById(R.id.btnGetWeather);
         mEditLayout = findViewById(R.id.lytEditText);
 
-        mbutton.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String city = meditText.getText().toString().trim();
+                String city = mEditText.getText().toString().trim();
                 if(!city.isEmpty()){
                     mEditLayout.setError(null);
                     Intent intent = new Intent(EnterCityActivity.this,MainActivity.class);
                     intent.putExtra("city",city);
-                    meditText.setText("");
+                    mEditText.setText("");
                     startActivity(intent);
                 } else {
                     mEditLayout.setError("Input a city first");

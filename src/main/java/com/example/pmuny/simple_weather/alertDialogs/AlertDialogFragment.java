@@ -1,4 +1,4 @@
-package com.example.pmuny.simple_weather;
+package com.example.pmuny.simple_weather.alertDialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -17,8 +17,8 @@ public class AlertDialogFragment extends DialogFragment {
         Context context = getActivity();
         androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(context);
         builder.setTitle("Oops Sorry!")
-                .setMessage("There was an Error, please try again")
-                .setPositiveButton("OK",null);
+                .setMessage("There was an unforeseen error, please try again")
+                .setPositiveButton("OK", null);
 
 
         return builder.create();

@@ -1,9 +1,9 @@
-package com.example.pmuny.simple_weather.Model;
+package com.example.pmuny.simple_weather.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Weather_Details {
+public class WeatherDetails {
 
     @SerializedName("id")
     @Expose

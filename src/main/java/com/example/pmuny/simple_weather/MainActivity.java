@@ -4,43 +4,40 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModelProvider;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Retrofit;
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.pmuny.simple_weather.API_Interface.API_Interface;
-import com.example.pmuny.simple_weather.Model.Weather_Details;
-import com.example.pmuny.simple_weather.Retrofit_Client.Retrofit_Client;
+import com.example.pmuny.simple_weather.model.WeatherDetails;
+import com.example.pmuny.simple_weather.di.ActivityComponent;
+import com.example.pmuny.simple_weather.di.AppComponent;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 
-public class MainActivity extends AppCompatActivity {
-    TextInputEditText editText;
-    TextView mCityLabel, mTemperature, mPressureLabel, mHumidityLabel, mSummary, mSuggestion;
-    ImageView mImageIcon;
-    String cityName;
-    String units = "metric";
-    String appId = "YOUR APP-ID HERE";
+import javax.inject.Inject;
 
-    API_Interface api_interface;
-    CompositeDisposable disposable = new CompositeDisposable();
+public class MainActivity extends AppCompatActivity {
+    private TextView mCityLabel, mTemperature, mPressureLabel, mHumidityLabel, mSummary, mSuggestion;
+    private ImageView mImageIcon;
+    private String cityName;
+
+    @Inject
+    MyViewModelFactory viewModelFactory;
+    MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Inject activity first.
+        AppComponent appComponent = ((CustomApplication) getApplication()).getAppComponent();
+        ActivityComponent activityComponent = appComponent.getActivityComponent().create();
+        activityComponent.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        editText = findViewById(R.id.editText);
+        viewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
         mCityLabel = findViewById(R.id.tvCityLabel);
         mTemperature = findViewById(R.id.tvTemperature);
         mPressureLabel = findViewById(R.id.tvPressureLabel);
@@ -49,44 +46,19 @@ public class MainActivity extends AppCompatActivity {
         mSuggestion = findViewById(R.id.tvSuggestion);
         mImageIcon = findViewById(R.id.imageView);
         ConstraintLayout rootView = findViewById(R.id.rootView);
+        ConstraintLayout viewContainer = findViewById(R.id.viewContainer);
         cityName = getIntent().getStringExtra("city");
-        //Initialize API
-        Retrofit retrofit = Retrofit_Client.getInstance();
-        api_interface = retrofit.create(API_Interface.class);
-        //Create an Observer which receives Data from API
-        final DisposableObserver<Weather_Details> observer = new DisposableObserver<Weather_Details>() {
-            @Override
-            public void onNext(Weather_Details weather_details) {
-                mTemperature.setText(weather_details.getMain().getTemp() + "");
-                mPressureLabel.setText(weather_details.getMain().getPressure() + " hPa");
-                mHumidityLabel.setText(weather_details.getMain().getHumidity() + "%");
-                mSummary.setText(weather_details.getWeather().get(0).getDescription() + "");
 
-                //Setting the Suggestion & Icon according to what the weather condition is.
-                mSuggestion.setText(viewModel.setWeatherSuggestion(weather_details.getWeather().get(0).getIcon()));
-                mImageIcon.setImageResource(viewModel.setWeatherIcon(weather_details.getWeather().get(0).getIcon()));
-                mCityLabel.setText(cityName);
+        //Observe for LiveData
+        viewModel.getWeatherLive().observe(this, weatherDetails -> {
+            if (weatherDetails != null && weatherDetails.getName().equalsIgnoreCase(cityName)) {
+                viewContainer.setVisibility(View.VISIBLE);
+                updateUI(weatherDetails);
             }
-
-            @Override
-            public void onError(Throwable e) {
-                alertUserAboutError();
-                mSuggestion.setText(e.getMessage());
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        };
+        });
 
         if (isNetworkAvailable()) {
-            disposable.add(
-                    api_interface.getWeather_DetailsInfo(cityName, units, appId)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(observer)
-            );
+            viewModel.getWeatherFromApi(cityName, "metric", appComponent, this);
         } else {
             Snackbar snackbar = Snackbar.make(rootView, "Network is Unavailable", Snackbar.LENGTH_SHORT);
             snackbar.show();
@@ -104,15 +76,21 @@ public class MainActivity extends AppCompatActivity {
         return isAvailable;
     }
 
-    private void alertUserAboutError() {
-        AlertDialogFragment dialog = new AlertDialogFragment();
-        dialog.show(getSupportFragmentManager(), "Error_Dialog");
-    }
+    private void updateUI(WeatherDetails weatherDetails) {
+        mTemperature.setText(weatherDetails.getMain().getTemp() + "");
+        mPressureLabel.setText(weatherDetails.getMain().getPressure() + " hPa");
+        mHumidityLabel.setText(weatherDetails.getMain().getHumidity() + "%");
+        mSummary.setText(weatherDetails.getWeather().get(0).getDescription() + "");
 
+        //Setting the Suggestion & Icon according to what the weather condition is.
+        mSuggestion.setText(viewModel.setWeatherSuggestion(weatherDetails.getWeather().get(0).getIcon()));
+        mImageIcon.setImageResource(viewModel.setWeatherIcon(weatherDetails.getWeather().get(0).getIcon()));
+        mCityLabel.setText(cityName);
+    }
 
     @Override
     protected void onStop() {
-        disposable.clear();
+        viewModel.disposeObserver();
         super.onStop();
     }
 }

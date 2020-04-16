@@ -1,4 +1,4 @@
-package com.example.pmuny.simple_weather.Model;
+package com.example.pmuny.simple_weather.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -16,7 +16,7 @@ public class Example {
     private int count;
     @SerializedName("weatherDetails")
     @Expose
-    private java.util.List<Weather_Details> weatherDetails = null;
+    private java.util.List<WeatherDetails> weatherDetails = null;
 
     public String getMessage() {
         return message;
@@ -42,11 +42,11 @@ public class Example {
         this.count = count;
     }
 
-    public java.util.List<Weather_Details> getWeatherDetails() {
+    public java.util.List<WeatherDetails> getWeatherDetails() {
         return weatherDetails;
     }
 
-    public void setWeatherDetails(java.util.List<Weather_Details> weatherDetails) {
+    public void setWeatherDetails(java.util.List<WeatherDetails> weatherDetails) {
         this.weatherDetails = weatherDetails;
     }
 
